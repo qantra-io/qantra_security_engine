@@ -1,0 +1,39 @@
+{
+  "name": "qantra_se",
+  "version": "0.0.1",
+  "description": "qantra_security_engine",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qantra-io/qantra_security_engine.git"
+  },
+  "keywords": [
+    "qantra",
+    "security",
+    "engine"
+  ],
+  "author": "qantra",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/qantra-io/qantra_security_engine/issues"
+  },
+  "homepage": "https://github.com/qantra-io/qantra_security_engine#readme",
+  "dependencies": {
+    "bluebird": "^3.5.3",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "ejs": "^2.6.1",
+    "express": "^4.16.4",
+    "http-proxy": "^1.17.0",
+    "install": "^0.12.2",
+    "moment": "^2.23.0",
+    "node-schedule": "^1.3.1",
+    "npm": "^6.5.0",
+    "on-headers": "^1.0.1",
+    "winston": "^3.1.0",
+    "winston-daily-rotate-file": "^3.5.1"
+  }
+}
