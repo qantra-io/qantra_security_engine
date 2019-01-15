@@ -1,7 +1,7 @@
    
     require('dotenv').config()
-    if(!process.env.NODE_ENV)process.env.NODE_ENV = 'development';
-    if(!process.env.TARGET)process.env.TARGET = 'http://10.142.0.3:3000';
+    if(!process.env.NODE_ENV) process.env.NODE_ENV = 'development';
+    if(!process.env.TARGET) process.env.TARGET = 'http://localhost:3000';
 
     const config           = require('./config');
     const pjson            = require('./package.json');
