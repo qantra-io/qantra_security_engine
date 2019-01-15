@@ -58,6 +58,7 @@ class ProxyManager  {
 
         //handle target crash
         if(proxyRes.statusCode ==500){
+          console.log(body.toString())
           res.writeHead(500, {
             'Content-Type': 'text/plain'
           });
