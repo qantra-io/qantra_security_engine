@@ -15,27 +15,33 @@
     const ejs              = require('ejs');
     
 
-    app.set('port',8080)
+    app.set('port',80)
     app.set('views', path.join(__dirname, 'client/views'));
     app.use(express.static(path.join(__dirname, 'client')));
    
     app.engine('html', ejs.renderFile);
     app.set('view engine', 'ejs');
     
-    app.use(bodyParser.urlencoded({ extended: false }));
+    app.use(bodyParser.json());
+    app.use(bodyParser.urlencoded({ extended: true }));
 
-
-   
     let proxyManager = new ProxyManager({target:process.env.TARGET});
 
-    proxyManager.manage(app)
+    proxyManager.http(app);
 
+    var server = require('http').createServer(app);
 
-    app.listen(app.get('port'), () => {
+    proxyManager.socket(server);
+
+    server.listen(app.get('port'), ()=>{
+
         console.log(`
             ${pjson.name} is running on port (${app.get('port')})
             enviroment: ${process.env.NODE_ENV} 
             target: ${process.env.TARGET}
         `)
-    })
+
+    });
+
+
 

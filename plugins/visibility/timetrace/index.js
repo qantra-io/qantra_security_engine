@@ -14,7 +14,7 @@ const onHeaders           = require('on-headers');
  * @param {object} req
  * @private
  */
-injectTimeTrace = (req)=>{
+let _injectTimeTrace = (req)=>{
     req.q_trace_time = new Date().getTime();
 }
 /**
@@ -23,7 +23,8 @@ injectTimeTrace = (req)=>{
  * @param {object} res
  * @return {number} 
  * @private
- */calTime = (res)=>{
+ */
+ let _calTime = (res)=>{
     return (new Date().getTime() - res.req.q_trace_time);
 }
 
@@ -35,12 +36,12 @@ injectTimeTrace = (req)=>{
  * @public
  * return {function} middleware
  */
-middleware = (redisClient, logger)=>{
+let middleware = (redisClient, logger)=>{
 
     return (req,res,next)=>{
-        injectTimeTrace(req);
+        _injectTimeTrace(req);
         onHeaders(res, function(){
-            let tm = calTime(this);
+            let tm = _calTime(this);
             logger.log('info',`${res.req.method} ${res.req.url} - ${tm}ms`);
         });
         next();

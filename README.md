@@ -1,4 +1,42 @@
-## Plugins Desing
+
+
+#Qantra Security Engine
+QANTRA is AI driven, user-behaviour-aware and defense active security engine that is powered with advanced AI algorithms to profile attackers and attacks to improve its threat detection and prevention mechanisms
+
+##Features Provided By The Q Server (underdevelopment)
+*User Behaviour Aware Security
+
+*Self-Learning Adaptive Profiling
+
+*Active Defense Driven By AI & ML
+
+*Real-Time Threat Detection & Analysis
+
+*API Rate Limit
+
+*Validation
+
+*Server Cloaking
+
+*URL Encryption
+
+*Complete OWASP Protection
+
+*Brute Force & DDoS Protection
+
+*Caching and Traffic Optimization
+
+*Content Routing & Traffic Forwarding
+
+*Geo-IP and IP Reputation Checking
+
+*Real-Time Anomaly Detection
+
+*100% Visibility & Monitoring
+
+*Virtual Patching and Vulnerability Scanning
+
+## Plugins Design
 every plugin must return a middleware function and cron function(optional)
  
 ```
@@ -7,7 +45,7 @@ module.exports: {
     cron: ()=>{}
 }
 ```
-cron function are used to manage and clean redis data; 
+cron function are used to manage and clean redis data 
 
 
 ### Visibility  Plugins 

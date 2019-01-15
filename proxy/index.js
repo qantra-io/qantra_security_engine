@@ -1,10 +1,14 @@
+/**
+ * main proxy manager class 
+ */
 
 const httpProxy          = require('http-proxy');
-const visibility         = require('../plugins/visibility');
-const protection         = require('../plugins/protection')
-const connection         = require('../connect');
-const logger             = require('../libs/logger')
 
+/**
+ * managers 
+ */
+const httpManager        = require('./http');
+const socketManager      = require('./socket');
 
 class ProxyManager  {
 
@@ -19,21 +23,20 @@ class ProxyManager  {
 
   }
 
-  //middleware
-  manage(app){
-    let self = this;
+  get proxyInstance(){
+    return this._proxy;
+  }
 
-    app.use(visibility.timeTrace(connection.redisClient, logger).middleware);
-    app.use(protection.metalHead(connection.redisClient).middleware);
+  http(app){
+    return httpManager(this,app);
+  }
 
-    //proxy.web
-    app.use((req,res,next)=>{
-      self._proxy.web(req,res)
-    })
-
+  socket(server){
+    return socketManager(this, server);
   }
 
   _proxyEvents(){
+    let self = this;
     this._proxy.on('error', function (err, req, res) {
       res.writeHead(500, {
         'Content-Type': 'text/plain'
@@ -42,20 +45,34 @@ class ProxyManager  {
       res.end('Something went wrong. And we are reporting a custom error message.');
     });
   
-    // Listen for the `open` event on `proxy`
-    this._proxy.on('open', function (proxySocket) {
-      console.log('open')
-    });
-          
-    //Listen for the `close` event on `proxy`.
-    this._proxy.on('close', function (res, socket, head) {
-        console.log('Client disconnected');
-    });
+
   
+
   
+
     this._proxy.on('proxyRes', function (proxyRes, req, res) {
-    
+      // console.log(res.getHeaders())
+      // var body = new Buffer('');
+      // proxyRes.on('data', function (data) {
+      //     body = Buffer.concat([body, data]);
+      // });
+      // proxyRes.on('end', function () {
+      //     // body = body.toString();
+      //     console.log("res from proxied server:", body);
+      //     res.send(body);
+      // });
+  });
+
+    this._proxy.on('proxyReq', function (proxyReq, req, res) {
+    //   console.log(req.url);
+    //   let bodyData = JSON.stringify(req.body + "foooo");
+    // // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+    // proxyReq.setHeader('Content-Type','application/json');
+    // proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+    // // Stream the content
+    // proxyReq.write(bodyData);
     });
+
   }
 
 
