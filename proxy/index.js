@@ -48,28 +48,28 @@ class ProxyManager  {
     this._proxy.on('proxyRes', function (proxyRes, req, res) {
       
       
-      var body = Buffer.from('');
-      res.headers = proxyRes.headers;
-      proxyRes.on('data', function (data) {
-          body = Buffer.concat([body, data]);
-      });
+      // var body = Buffer.from('');
+      // res.headers = proxyRes.headers;
+      // proxyRes.on('data', function (data) {
+      //     body = Buffer.concat([body, data]);
+      // });
 
-      proxyRes.on('end', function () {
+      // proxyRes.on('end', function () {
 
-        // //handle target crash
-        // if(proxyRes.statusCode ==500){
-        //   console.log(body.toString())
-        //   res.writeHead(500, {
-        //     'Content-Type': 'text/plain'
-        //   });
-        //   return res.end('Something went wrong. And we are reporting a custom error message.');
-        // }
+      //   // //handle target crash
+      //   // if(proxyRes.statusCode ==500){
+      //   //   console.log(body.toString())
+      //   //   res.writeHead(500, {
+      //   //     'Content-Type': 'text/plain'
+      //   //   });
+      //   //   return res.end('Something went wrong. And we are reporting a custom error message.');
+      //   // }
 
-        // //send response as it is 
-        // res.writeHead(proxyRes.statusCode, proxyRes.headers);
-        // return res.end(body.toString());
+      //   // //send response as it is 
+      //   // res.writeHead(proxyRes.statusCode, proxyRes.headers);
+      //   // return res.end(body.toString());
 
-      });
+      // });
 
   });
 
