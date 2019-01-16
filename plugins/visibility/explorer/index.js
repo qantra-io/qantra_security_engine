@@ -1,33 +1,28 @@
-"use strict"
 
-const ext        = require('../../../data/extensions');
-const labels     = require('../../../data/labels')
 
-function extract(url) {
-    return (url = url.substr(1 + url.lastIndexOf("/")).split('?')[0]).split('#')[0].substr(url.lastIndexOf("."))
-}
 
-let _detectType=(req,res)=>{
-    for(let i=0; i<ext.staticExt.length; i++){
-        if(req.url.indexOf(ext.staticExt[i])>-1){
-            req.q_scheme.route.labels.push(labels.route.asset);
+let _detectType=(helper,req,res)=>{
+    let staticExt = helper.data.extns.static;
+    for(let i=0; i<staticExt.length; i++){
+        if(req.url.indexOf(staticExt[i])>-1){
+            req.qantra.scheme.route.labels.push(helper.data.routeLabels.asset);
             break;
         } 
     }
 }
 
 
-let middleware = ()=>{
+let middleware = (helper)=>{
     return (req,res,next)=>{
-        _detectType(req,res);
-        console.log(req.q_scheme)
+        _detectType(helper,req,res);
+        console.log(req.qantra.scheme)
         next();
     }
 }
 
-module.exports = ()=>{
+module.exports = (helper)=>{
     return {
-        middleware: middleware()
+        middleware: middleware(helper)
     } 
     
 }

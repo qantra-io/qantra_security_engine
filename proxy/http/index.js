@@ -1,21 +1,20 @@
 
 const visibility         = require('../../plugins/visibility');
-const protection         = require('../../plugins/protection')
-const connection         = require('../../connect');
-const logger             = require('../../libs/logger')
-
+const protection         = require('../../plugins/protection');
+let helper               = require('../../helper');
 
 module.exports = (self,app)=>{
 
-    app.use(visibility.scheme().middleware);
-    app.use(visibility.explorer().middleware);
-    app.use(visibility.timeTrace(connection.redisClient, logger).middleware);
-    app.use(protection.metalHead(connection.redisClient).middleware);
+    app.use(visibility.scheme(helper).middleware);
+    app.use(visibility.explorer(helper).middleware);
+    app.use(visibility.timeTrace(helper).middleware);
+    app.use(visibility.strip(helper).middleware);
+    app.use(protection.metalHead(helper).middleware);
 
     //proxy.web
     app.use((req,res,next)=>{
         self._proxy.web(req,res,{selfHandleResponse : true})
-    })
+    });
     
 }
 

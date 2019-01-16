@@ -1,13 +1,16 @@
-const schemes = require('../../../data/schemes');
 
-let middleware = ()=>{
+let middleware = (helper)=>{
     return (req,res,next)=>{
-        if(!req.q_scheme) req.q_scheme = JSON.parse(JSON.stringify(schemes.q_scheme));
+        //plugins are properties of qantra ex: qantra.plugin_name
+        if(!req.qantra) req.qantra={};
+        //scheme is used for route and user analysis
+        req.qantra.scheme = JSON.parse(JSON.stringify(helper.intfs.scheme));
+
         next();
     }
 }
-module.exports = ()=>{
+module.exports = (helper)=>{
     return {
-        middleware: middleware()
+        middleware: middleware(helper)
     }
 }

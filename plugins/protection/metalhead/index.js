@@ -19,17 +19,17 @@ let reform=(res)=>{
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-Permitted-Cross-Domain-Policies', 'none');
-    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains')
-    res.setHeader('X-Download-Options', 'noopen')
+    res.setHeader('Strict-Transport-Security', 'max-age=15552000; includeSubDomains');
+    res.setHeader('X-Download-Options', 'noopen');
   
-    res.setHeader('Surrogate-Control', 'no-store')
-    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
-    res.setHeader('Pragma', 'no-cache')
-    res.setHeader('Expires', '0')
+    res.setHeader('Surrogate-Control', 'no-store');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
   
-    res.setHeader('X-XSS-Protection', '1; mode=block')
-    res.removeHeader('X-Powered-By')
-    res.removeHeader('server')
+    res.setHeader('X-XSS-Protection', '1; mode=block');
+    res.removeHeader('X-Powered-By');
+    res.removeHeader('server');
 
     return res;
 }

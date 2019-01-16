@@ -15,17 +15,17 @@ const onHeaders           = require('on-headers');
  * @private
  */
 let _injectTimeTrace = (req)=>{
-    req.q_trace_time = new Date().getTime();
+    req.qantra.trace_time = new Date().getTime();
 }
 /**
- * calculate the response for a request using the preset q_trace_time 
+ * calculate the response for a request using the preset qantra.trace_time 
  * 
  * @param {object} res
  * @return {number} 
  * @private
  */
  let _calTime = (res)=>{
-    return (new Date().getTime() - res.req.q_trace_time);
+    return (new Date().getTime() - res.req.qantra.trace_time);
 }
 
 
@@ -36,22 +36,22 @@ let _injectTimeTrace = (req)=>{
  * @public
  * return {function} middleware
  */
-let middleware = (redisClient, logger)=>{
+let middleware = (helper)=>{
 
     return (req,res,next)=>{
         _injectTimeTrace(req);
         onHeaders(res, function(){
             let tm = _calTime(this);
-            logger.log('info',`${res.req.method} ${res.req.url} - ${tm}ms`);
+            helper.logger.log('info',`${res.req.method} ${res.req.url} - ${tm}ms`);
         });
         next();
     }
 }
 
-module.exports = (redisClient,logger)=>{
+module.exports = (helper)=>{
     return {   
         
-        middleware: middleware(redisClient,logger)
+        middleware: middleware(helper)
         
     }
 }

@@ -48,7 +48,7 @@ class ProxyManager  {
     this._proxy.on('proxyRes', function (proxyRes, req, res) {
       
       
-      var body = new Buffer('');
+      var body = Buffer.from('');
       res.headers = proxyRes.headers;
       proxyRes.on('data', function (data) {
           body = Buffer.concat([body, data]);

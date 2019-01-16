@@ -1,4 +1,4 @@
-const q_scheme = {
+const scheme = {
     route: {
         parent: '',
         labels:[],
@@ -8,6 +8,4 @@ const q_scheme = {
     }
 }
 
-module.exports = { 
-    q_scheme
-}
+module.exports = scheme;

@@ -17,8 +17,9 @@ let staticExt = [
 ]
 
 
-module.exports = {
-
-    staticExt: staticExt.map((x)=>{ return `.${x}`})
-    
+const extns = { 
+    static: staticExt.map((x)=>{ return `.${x}`})
 }
+
+
+module.exports = extns;
