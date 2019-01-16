@@ -5,6 +5,7 @@ let helper               = require('../../helper');
 
 module.exports = (self,app)=>{
 
+    console.log("*");
     app.use(visibility.scheme(helper).middleware);
     app.use(visibility.explorer(helper).middleware);
     app.use(visibility.timeTrace(helper).middleware);
