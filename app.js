@@ -22,8 +22,8 @@
     app.engine('html', ejs.renderFile);
     app.set('view engine', 'ejs');
     
-    app.use(bodyParser.json());
-    app.use(bodyParser.urlencoded({ extended: true }));
+    // app.use(bodyParser.json());
+    // app.use(bodyParser.urlencoded({ extended: true }));
 
     let proxyManager = new ProxyManager({target:process.env.TARGET});
 
