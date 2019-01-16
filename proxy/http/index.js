@@ -17,7 +17,7 @@ module.exports = (self,app)=>{
 
     //proxy.web
     app.use((req,res,next)=>{
-        self._proxy.web(req,res,{selfHandleResponse : true})
+        self._proxy.web(req,res,{selfHandleResponse : false})
     });
     
 }
