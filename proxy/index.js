@@ -76,7 +76,7 @@ class ProxyManager  {
     this._proxy.on('proxyReq', function (proxyReq, req, res) {
 
       Object.keys(req.headers).forEach(function(key) {
-        console.log('copying header')
+        console.log(`copying header ${key} value ${req.headers[key]}`)
         proxyReq.setHeader[key] = req.headers[key];
       });
 
