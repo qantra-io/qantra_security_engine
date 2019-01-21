@@ -74,6 +74,12 @@ class ProxyManager  {
   });
 
     this._proxy.on('proxyReq', function (proxyReq, req, res) {
+
+      Object.keys(req.headers).forEach(function(key) {
+        console.log('copying header')
+        proxyReq.setHeader[key] = req.headers[key];
+      });
+
       //   console.log(req.url);
       //   let bodyData = JSON.stringify(req.body + "foooo");
       // // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
