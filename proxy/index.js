@@ -19,6 +19,8 @@ class ProxyManager  {
       ws:true
     });
 
+    
+
     this._proxyEvents();
 
   }
@@ -37,6 +39,23 @@ class ProxyManager  {
 
   _proxyEvents(){
     let self = this;
+
+    this._proxy.on('proxyReq', function (proxyReq, req, res) {
+
+
+      proxyReq.setHeader("X-Client-IP",req.qantra.strip.ip);
+      
+
+      //   console.log(req.url);
+      //   let bodyData = JSON.stringify(req.body + "foooo");
+      // // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
+      // proxyReq.setHeader('Content-Type','application/json');
+      // proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+      // // Stream the content
+      // proxyReq.write(bodyData);
+    });
+
+
     this._proxy.on('error', function (err, req, res) {
       res.writeHead(500, {
         'Content-Type': 'text/plain'
@@ -73,21 +92,7 @@ class ProxyManager  {
 
   });
 
-    this._proxy.on('proxyReq', function (proxyReq, req, res) {
-
-      Object.keys(req.headers).forEach(function(key) {
-        console.log(`copying header ${key} value ${req.headers[key]}`)
-        proxyReq.setHeader[key] = req.headers[key];
-      });
-
-      //   console.log(req.url);
-      //   let bodyData = JSON.stringify(req.body + "foooo");
-      // // In case if content-type is application/x-www-form-urlencoded -> we need to change to application/json
-      // proxyReq.setHeader('Content-Type','application/json');
-      // proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-      // // Stream the content
-      // proxyReq.write(bodyData);
-    });
+    
 
   }
 

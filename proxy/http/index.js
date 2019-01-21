@@ -5,6 +5,9 @@ let helper               = require('../../helper');
 
 module.exports = (self,app)=>{
 
+
+   
+
     app.use((req,res,next)=>{
         console.log("*");
         next();
