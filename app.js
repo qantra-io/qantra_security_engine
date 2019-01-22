@@ -29,7 +29,7 @@
 
     proxyManager.socket(server);
 
-    server.listen(app.get('port'), ()=>{
+    server.listen(config.port, ()=>{
 
         console.log(`
             ${pjson.name} is running on port (${app.get('port')})
