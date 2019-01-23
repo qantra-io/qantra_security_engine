@@ -1,6 +1,7 @@
 
 let config = {defaults:{}};
 
+config.prefix       = "qantra";
 config.env          = (process.env.NODE_ENV)?process.env.NODE_ENV:"development";
 config.target       = (process.env.TARGET)?process.env.TARGET:'http://localhost:3000';
 config.port         = (process.env.PORT)?process.env.PORT:"80";

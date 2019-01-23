@@ -1,5 +1,7 @@
 
-
+/**
+ * detect the type of the route and label it using the data.routeLabels
+ */
 
 let _detectType=(helper,req,res)=>{
     let staticExt = helper.data.extns.static;

@@ -32,7 +32,7 @@
     server.listen(config.port, ()=>{
 
         console.log(`
-            ${pjson.name} is running on port (${app.get('port')})
+            ${pjson.name} is running on port (${config.port})
             enviroment: ${config.env} 
             target: ${config.target}
         `)

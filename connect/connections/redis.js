@@ -7,10 +7,11 @@ const redisClient = redis.createClient("//"+config.redisUrl+":"+config.redisPort
 
 redisClient.on("error", function (err) {
     console.log('REDIS connection', 'error!');
-    console.log(err)
+    console.log(err);
 });
 redisClient.on("connect", function () {
-    console.log('REDIS connection', 'successful...')
+    console.log('REDIS connection', 'successful...');
+    redisClient.setAsync(`${config.prefix}-redis`, `up @ ${new Date()}`);
 });
 
 module.exports = {
