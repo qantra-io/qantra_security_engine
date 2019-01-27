@@ -9,6 +9,7 @@ const httpProxy          = require('http-proxy');
  */
 const httpManager        = require('./http');
 const socketManager      = require('./socket');
+const config             = require('../config');
 
 class ProxyManager  {
 
@@ -18,6 +19,8 @@ class ProxyManager  {
       target: options.target,
       ws:true
     });
+
+    this._targets = config.targets;
 
   }
 

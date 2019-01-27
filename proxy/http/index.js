@@ -20,7 +20,14 @@ module.exports = (self,app)=>{
 
     //proxy.web
     app.use((req,res,next)=>{
-        self._proxy.web(req,res,{selfHandleResponse : false})
+        
+        let target = self._targets.shift();
+        console.log("======> FORWARD TO TARGET ====> " + target.name)
+        self._proxy.web(req,res,{
+            target: target.url,
+            selfHandleResponse : false
+        })
+        self._targets.push(target);
     });
     
 };
