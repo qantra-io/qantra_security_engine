@@ -33,8 +33,7 @@
 
         console.log(`
             ${pjson.name} is running on port (${config.port})
-            enviroment: ${config.env} 
-            targets: ${config.targets}
+            targets: ${JSON.stringify(config.targets)}
         `)
 
     });

@@ -26,5 +26,4 @@ module.exports = (helper)=>{
     return {
         middleware: middleware(helper)
     } 
-    
 }

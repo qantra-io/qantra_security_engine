@@ -11,5 +11,7 @@ module.exports  = {
     //interfaces - fixed shapes for object over the app
     intfs,
     //handles the type of a specific cron
-    cron: ""
+    cron: "",
+    //proxy instance
+    proxyInstance:{}
 }

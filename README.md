@@ -67,6 +67,35 @@ REDIS_URL     = 127.0.0.1
 REDIS_PORT    = 6379
 ```
 * run ```npm install -g pm2 ```
+* configure Qantra 
+```
+//config.js - main directory 
+
+module.exports = {
+    prefix:'qantra',
+    //qantra running port
+    port: 80,
+    //add target servers information 
+    targets: [
+        {
+            url:"http://localhost:3000",
+            name: "simple target"
+        },
+        {
+            url:"http://localhost:4000",
+            name: "two target"
+        }
+    ],
+    //redis url
+    redis:{
+        url:"127.0.0.1",
+        port:6379
+    }
+};
+
+
+
+```
 * run ```pm2 start process.json```
 
 ## Plugins Design

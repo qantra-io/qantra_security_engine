@@ -20,7 +20,7 @@ class ProxyManager  {
       ws:true
     });
 
-    this._targets = config.targets;
+    this.targets = config.targets;
 
   }
 

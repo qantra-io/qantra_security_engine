@@ -5,9 +5,10 @@ let helper               = require('../../helper');
 
 module.exports = (self,app)=>{
 
-
     proxyHttpEvents(self);
 
+    helper.proxyInstance = self;
+    visibility.watcher(helper).fns.checkTargets();
     app.use((req,res,next)=>{
         console.log("*");
         next();
@@ -21,13 +22,16 @@ module.exports = (self,app)=>{
     //proxy.web
     app.use((req,res,next)=>{
         
-        let target = self._targets.shift();
-        console.log("======> FORWARD TO TARGET ====> " + target.name)
+        let target = self.targets.shift();
+        
+        //if all targets down returning false;
+        if(!target)return false;
+
         self._proxy.web(req,res,{
             target: target.url,
             selfHandleResponse : false
         })
-        self._targets.push(target);
+        self.targets.push(target);
     });
     
 };
