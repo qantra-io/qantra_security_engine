@@ -58,15 +58,6 @@ Q-Server is AI & ML powered threat intellegence network that collects and analyi
 * install Redis 
 * clone Qantra_Secure_Engine
 * run npm install inside the repo
-* create .env file 
-```
-ENV           = production
-PORT          = 80
-TARGET        = http://localhost:3000
-REDIS_URL     = 127.0.0.1
-REDIS_PORT    = 6379
-```
-* run ```npm install -g pm2 ```
 * configure Qantra 
 ```
 //config.js - main directory 
@@ -93,9 +84,8 @@ module.exports = {
     }
 };
 
-
-
 ```
+* run ```npm install -g pm2 ```
 * run ```pm2 start process.json```
 
 ## Plugins Design
