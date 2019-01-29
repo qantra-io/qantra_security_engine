@@ -18,9 +18,12 @@ class QNS {
     makeKey(pluginName, action){
         return `${pluginName}::${action}::`;
     }
-    pub(verb, pluginName, action, event, id, obj){
-        
-        helper.redisClient
+    pub(verb, pluginName, action, event, id, data){
+        let obj = {
+            event: event,
+            id: id,
+            data: data
+        }
         console.log(`publishing on: ${this.makeKey(pluginName,action)}`);
         this.emit(this.makeKey(pluginName,action), obj);
 
@@ -36,8 +39,12 @@ class QNS {
 
         this.on(this.makeKey(pluginName,action), (m)=>{
             console.log(`message listened: ${JSON.stringify(m)}`);
+            this.onEvent(this.)
         });
-    } 
+    }
+    onEvent(){
+        
+    }
 
 }
 util.inherits(QNS, EventEmitter);
