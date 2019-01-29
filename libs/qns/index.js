@@ -39,7 +39,7 @@ class QNS {
 
         this.on(this.makeKey(pluginName,action), (m)=>{
             console.log(`message listened: ${JSON.stringify(m)}`);
-            this.onEvent(this.)
+            // this.onEvent(this.)
         });
     }
     onEvent(){
