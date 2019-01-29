@@ -15,7 +15,7 @@ class ProxyManager  {
 
   constructor(options){
     
-    this._proxy = httpProxy.createProxyServer({
+    this.proxy = httpProxy.createProxyServer({
       target: options.target,
       ws:true
     });
@@ -25,7 +25,7 @@ class ProxyManager  {
   }
 
   get proxyInstance(){
-    return this._proxy;
+    return this.proxy;
   }
 
   http(app){

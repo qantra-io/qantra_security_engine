@@ -27,7 +27,7 @@ module.exports = (self,app)=>{
         //if all targets down returning false;
         if(!target)return false;
 
-        self._proxy.web(req,res,{
+        self.proxy.web(req,res,{
             target: target.url,
             selfHandleResponse : false
         })
@@ -38,7 +38,7 @@ module.exports = (self,app)=>{
 
 let proxyHttpEvents = (self)=>{
 
-    self._proxy.on('error', function (err, req, res) {
+    self.proxy.on('error', function (err, req, res) {
         res.writeHead(500, {
           'Content-Type': 'text/plain'
         });
@@ -46,7 +46,7 @@ let proxyHttpEvents = (self)=>{
         res.end('Something went wrong. And we are reporting a custom error message.');
     });
 
-    self._proxy.on('proxyReq', function (proxyReq, req, res) {
+    self.proxy.on('proxyReq', function (proxyReq, req, res) {
 
 
         proxyReq.setHeader("X-Client-IP",req.qantra.strip.ip);
@@ -61,7 +61,7 @@ let proxyHttpEvents = (self)=>{
         // proxyReq.write(bodyData);
     });
 
-    self._proxy.on('proxyRes', function (proxyRes, req, res) {
+    self.proxy.on('proxyRes', function (proxyRes, req, res) {
       
       
         // var body = Buffer.from('');

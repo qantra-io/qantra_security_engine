@@ -2,6 +2,7 @@ const connection         = require('../connect');
 const logger             = require('../libs/logger');
 const data               = require('../data');
 const intfs              = require('../intfs');
+const qns                = require('../libs/qns');
 
 module.exports  = { 
     redisClient: connection.redisClient,
@@ -13,5 +14,7 @@ module.exports  = {
     //handles the type of a specific cron
     cron: "",
     //proxy instance
-    proxyInstance:{}
+    proxyInstance:{},
+    //qantra notifcation service
+    qns: qns
 }

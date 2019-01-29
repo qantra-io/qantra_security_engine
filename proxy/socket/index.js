@@ -2,7 +2,7 @@
 module.exports = (self,server)=>{
 
     // Listen for the `open` event on `proxy`
-    // self._proxy.on('open', function (proxySocket) {
+    // self.proxy.on('open', function (proxySocket) {
     //     // console.log(proxySocket);
     //     console.log('open')
 
@@ -18,7 +18,7 @@ module.exports = (self,server)=>{
     // });
             
     //Listen for the `close` event on `proxy`.
-    self._proxy.on('close', function (res, socket, head) {
+    self.proxy.on('close', function (res, socket, head) {
         console.log('Client disconnected');
     });
 
@@ -36,7 +36,7 @@ module.exports = (self,server)=>{
         //     console.log("===utf16le");
         //     console.log(data.toString('utf16le'));
         // })
-        self._proxy.ws(req, socket, head);
+        self.proxy.ws(req, socket, head);
     });
     
 }
