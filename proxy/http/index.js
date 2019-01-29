@@ -39,11 +39,13 @@ module.exports = (self,app)=>{
 let proxyHttpEvents = (self)=>{
 
     self.proxy.on('error', function (err, req, res) {
-        res.writeHead(500, {
-          'Content-Type': 'text/plain'
-        });
-      
-        res.end('Something went wrong. And we are reporting a custom error message.');
+        if(res){
+            res.writeHead(500, {
+                'Content-Type': 'text/plain'
+            });
+            
+            res.end('Something went wrong. And we are reporting a custom error message.');
+        }
     });
 
     self.proxy.on('proxyReq', function (proxyReq, req, res) {

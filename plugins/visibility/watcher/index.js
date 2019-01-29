@@ -7,12 +7,16 @@
 */
 const plugin = {
     name: 'watcher',
-    desc: 'check the live state of target servers',
-    events: {
-        down: 'watcher-down-:serverName',
-        up: 'watcher-up-:serverName'
+    actions: {
+        check: {
+            name: 'check',
+            events: {
+                down:'server-down',
+                up:'server-up'
+            }
+        }
     }
-}
+};
 const axios = require('axios');
 
 
@@ -23,7 +27,7 @@ const axios = require('axios');
  * @param {object} helper
  */
 let checkTargets = (helper) =>{
-    helper.qns.listenEvents(plugin.name,'check', ['server-down','server-up']);
+    helper.qns.regEvent(plugin.name, plugin.actions.check.name, helper.qns.eventNature().toggle);
     return ()=>{
         _checkAll(helper)
         setInterval(()=>{
@@ -42,7 +46,7 @@ let _checkAll =(helper)=>{
             helper.logger.info(`check OK for target ${target.name}: ${target.url}`);
         })
         .catch((err)=>{
-            helper.qns.pub('error', plugin.name, 'check', 'server-down', target.url, {message: `server ${target.name} is down at ${new Date()}`});
+            helper.qns.pub('error', plugin.name,  plugin.actions.check.name, plugin.actions.check.events.down, target.url, {message: `server ${target.name} is down at ${new Date()}`});
             helper.logger.info(`check Fail for target ${target.name}: ${target.url}`);
             checkTarget(target, helper);
         });
@@ -63,7 +67,7 @@ let checkTarget = (target, helper)=>{
     setTimeout((t,h)=>{
         axios.get(t.url)
         .then((res)=>{
-            helper.qns.pub('info', plugin.name, 'check', 'server-down', t.url, {message: 'server-up'});
+            helper.qns.pub('info', plugin.name,  plugin.actions.check.name, plugin.actions.check.events.up, t.url, {message: `server ${t.url} is now up and running`});
             helper.logger.info(`check OK for failing target ${t.name}: ${t.url}. it is now OK`);
             h.proxyInstance.targets.push(t);
         })

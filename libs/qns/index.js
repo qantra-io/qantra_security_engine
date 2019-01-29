@@ -1,25 +1,44 @@
 let EventEmitter = require('events').EventEmitter;
 let util         = require('util');
+let helper       = require('../../helper');
 
 class QNS {
-    constructor(){}
+    constructor(){
+        this.events = [];
+        this.natures = { 
+            toggle: 'toggle',
+            number: 'number',
+        }
+    }
+
+    eventNature(){
+        return this.natures;
+    }
+
+    makeKey(pluginName, action){
+        return `${pluginName}::${action}::`;
+    }
     pub(verb, pluginName, action, event, id, obj){
         
-        obj.verb   = verb;
-        obj.event = event;
-        obj.id     = id;
-        obj.message = `${pluginName}::${verb}::${event}::${id}:: ${obj.message}`;
-        console.log(`publishing on: ${pluginName}:${action}`);
-        this.emit(`${pluginName}:${action}`, obj);
+        helper.redisClient
+        console.log(`publishing on: ${this.makeKey(pluginName,action)}`);
+        this.emit(this.makeKey(pluginName,action), obj);
 
     }
-    listenEvents(pluginName, action, eventsArr){
-        
-        this.on(`${pluginName}:${action}`, (m)=>{
-            console.log(`message listened: ${JSON.stringify(m)}`);
+    regEvent(pluginName, action, type){
+
+        console.log(`listening on: ${this.makeKey(pluginName,action)}`);
+
+        this.events.push({
+            key: this.makeKey(pluginName,action),
+            type: type
         });
 
-    }
+        this.on(this.makeKey(pluginName,action), (m)=>{
+            console.log(`message listened: ${JSON.stringify(m)}`);
+        });
+    } 
+
 }
 util.inherits(QNS, EventEmitter);
 
