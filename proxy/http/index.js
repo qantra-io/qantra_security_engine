@@ -2,22 +2,27 @@
 const visibility         = require('../../plugins/visibility');
 const protection         = require('../../plugins/protection');
 let helper               = require('../../helper');
+const detection          = require('../../plugins/detection');
 
 module.exports = (self,app)=>{
 
     proxyHttpEvents(self);
 
     helper.proxyInstance = self;
-    visibility.watcher(helper).fns.checkTargets();
+    visibility.watcher(helper);
     app.use((req,res,next)=>{
         console.log("*");
         next();
     });
+
+    //chain of responsibilities 
     app.use(visibility.scheme(helper).middleware);
     app.use(visibility.explorer(helper).middleware);
     app.use(visibility.timeTrace(helper).middleware);
     app.use(visibility.strip(helper).middleware);
     app.use(protection.metalHead(helper).middleware);
+
+    app.use(detection.seeder(helper).middleware);
 
     //proxy.web
     app.use((req,res,next)=>{
@@ -29,7 +34,8 @@ module.exports = (self,app)=>{
 
         self.proxy.web(req,res,{
             target: target.url,
-            selfHandleResponse : false
+            selfHandleResponse : false,
+            timeout: 120000
         })
         self.targets.push(target);
     });
@@ -39,13 +45,12 @@ module.exports = (self,app)=>{
 let proxyHttpEvents = (self)=>{
 
     self.proxy.on('error', function (err, req, res) {
-        if(res){
+        
             res.writeHead(500, {
                 'Content-Type': 'text/plain'
             });
             
             res.end('Something went wrong. And we are reporting a custom error message.');
-        }
     });
 
     self.proxy.on('proxyReq', function (proxyReq, req, res) {
