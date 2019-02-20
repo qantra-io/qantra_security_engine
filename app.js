@@ -38,5 +38,49 @@
 
     });
 
+    var nssocket = require('nssocket');
+
+    var outbound = new nssocket.NsSocket({
+        reconnect: true,
+        type: 'tcp4',
+        retryInterval: 1000,
+        max:30
+      });
+
+      outbound.on('start', function () {
+        //
+        // The socket will emit this event periodically
+        // as it attempts to reconnect
+        //
+        console.dir('start');
+      });
+
+      outbound.on('close', function () {
+        //
+        // The socket will emit this event periodically
+        // as it attempts to reconnect
+        //
+        console.dir('closed');
+      });
+      outbound.on('error', function () {
+        //
+        // The socket will emit this event periodically
+        // as it attempts to reconnect
+        //
+        console.dir('error');
+      });
+
+    outbound.data(['you', 'there'], function () {
+      outbound.send(['iam', 'here'], { iam: true, indeedHere: true });
+    });
+    
+    try{
+      outbound.connect(6785,'localhost');
+    } catch(err) {
+      console.log(err);
+    }
+    
+
+
 
 

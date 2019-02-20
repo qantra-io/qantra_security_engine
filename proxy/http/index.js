@@ -20,9 +20,10 @@ module.exports = (self,app)=>{
     app.use(visibility.explorer(helper).middleware);
     app.use(visibility.timeTrace(helper).middleware);
     app.use(visibility.strip(helper).middleware);
+    app.use(detection.seeder(helper).middleware);
     app.use(protection.metalHead(helper).middleware);
 
-    app.use(detection.seeder(helper).middleware);
+    
 
     //proxy.web
     app.use((req,res,next)=>{

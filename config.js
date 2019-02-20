@@ -1,6 +1,6 @@
 module.exports = {
     prefix:'qantra',
-    port: 80,
+    port: 5000,
     targets: [
         {
             url:"http://localhost:3000",

@@ -23,7 +23,7 @@ let middleware = (helper)=>{
         let geo = geoip.lookup(ip);
         req.qantra.strip = geo || {};
         req.qantra.strip.ip = ip;
-        req.qantra.strip.agent = req.headers['user-agent'];
+        req.qantra.strip.agent = req.headers['user-agent'] || 'anon';
         req.qantra.strip.referer = req.headers.referer;
         req.qantra.strip.origin = req.headers.origin;
         console.log(req.qantra.strip);

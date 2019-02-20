@@ -42,6 +42,7 @@ let middleware = (helper)=>{
         _injectTimeTrace(req);
         onHeaders(res, function(){
             let tm = _calTime(this);
+            console.log('info',`${res.req.method} ${res.req.url} - ${tm}ms`)
             helper.logger.log('info',`${res.req.method} ${res.req.url} - ${tm}ms`);
         });
         next();
