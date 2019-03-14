@@ -1,9 +1,8 @@
-const envManager   = require('./env_manager');
-const connector      = require('./connector');
+const envManager   = require('../../env-manager');
+const connector    = require('../../connector');
 const prompts      = require('prompts');
-const log          = new (require('./log'));
-const linker       = require('./linker');
-const lang         = require('./lang');
+const log          = new (require('./cli-log'));
+const lang         = require('../../lang');
 
 let onCancel = prompts => {
   process.exit(0)
@@ -42,10 +41,10 @@ async function redisConnect(){
 async function connectCloud(){
 
   log.space();
-  log.glow('🔑 SERVER API KEY')
+  log.glow('🔑 SERVER ACTIVATION CODE')
   .space(0)
   .glow('connect to Qantra.io','bold')
-  .note('make sure you have created Server API key on Qantra.io')
+  .note('make sure you have created server activation code on Qantra.io')
 
   let response = await prompts([
     {
@@ -53,9 +52,7 @@ async function connectCloud(){
       name: 'SERVER_KEY',
       message: 'Server API Key',
       validate: (v)=>{
-        let d = v.split("::");
-        if(d[0] && d[1])return true;
-        return false;
+        return (Buffer.from(v, 'base64').toString('utf8').split('::').length==3)
       }
     }
   ],{onCancel});
@@ -63,12 +60,17 @@ async function connectCloud(){
   log.spin('connecting to Qantra.io ...');
   try {
 
-    response = response.SERVER_KEY.split('::')
-    envManager.updateEnv({
-      SERVER_ID: response[0],
-      SERVER_TOKEN: response[1]
-    });
-    log.spinner.succeed('connected to Qantra.io successfully ⚡️')
+    let parts      = Buffer.from(response.SERVER_KEY, 'base64').toString('utf8').split('::');
+    
+    let envs = {
+      SERVER_UID: parts[0],
+      SERVER_PUB: parts[1],
+      SERVER_STEP: parts[2]
+    }
+    console.log(envs)
+
+    envManager.updateEnv(envs);
+    log.spinner.succeed('Server API keys added successfully.');
 
   } catch(e){
     log.spinner.fail('connectin failed');
@@ -107,28 +109,13 @@ async function insertPassword(){
 }
 
 
-/** adding password - uses insert password */
-async function addPassword(){
-  log.space();
-  log.glow('🔒 INSTANCE PASSWORD')
-  .space(0)
-  .glow('Qantra saves credentials in Redis.','bold')
-  .note('a password is required to encrypt qantras data on your machine.')
 
-  let response = await insertPassword();
-
-  log.spin(); 
-  linker.setPassword(response.password);
-  log.spinner.succeed('Password Saved. ⚡️')
-
-}
 
 
 
 module.exports = { 
 
 redisConnect,
-connectCloud,
-addPassword,
+connectCloud
 
 }

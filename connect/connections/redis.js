@@ -5,7 +5,7 @@ bluebird.promisifyAll(redis);
 // bluebird.promisifyAll(redis.RedisClient.prototype);
 // bluebird.promisifyAll(redis.Multi.prototype);
 
-const redisClient = redis.createClient("//"+config.redis.url+":"+config.redis.port);
+const redisClient = redis.createClient(process.env.REDIS_URI);
 
 redisClient.on("error", function (err) {
     console.log('REDIS connection', 'error!');

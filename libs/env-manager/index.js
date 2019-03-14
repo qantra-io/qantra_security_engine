@@ -3,7 +3,7 @@
 */
 const fs      = require('fs');
 const path    = require('path');
-const Logger  = require('./log');
+const Logger  = require('../cli/libs/cli-log');
 const log     = new Logger();
 
 class EnvManager {

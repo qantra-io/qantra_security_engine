@@ -37,7 +37,7 @@ let checkTargets = (helper) =>{
  * @param {object} helper 
  */
 let _checkAll =(helper)=>{
-    
+    if(!helper.proxyInstance.targets)return;
     helper.proxyInstance.targets.forEach((target)=>{
         axios.get(target.url)
         .then((res)=> {

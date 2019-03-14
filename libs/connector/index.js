@@ -1,8 +1,8 @@
 
 const redis            = require("redis");
 const bluebird         = require("bluebird");
-const log              = new (require('./log'));
-const lang             = require('./lang');
+const log              = new (require('../cli/libs/cli-log'));
+const lang             = require('../lang');
 
 bluebird.promisifyAll(redis);
 

@@ -1,19 +1,21 @@
    
-    require('dotenv').config();
+const config           = require('./config');
+const pjson            = require('./package.json');
+const ProxyManager     = require('./proxy').ProxyManager;
+const express          = require('express');
+const app              = express();
 
-    const config           = require('./config');
-    const pjson            = require('./package.json');
-    const ProxyManager     = require('./proxy').ProxyManager;
-    const express          = require('express');
-    const app              = express();
+const cors             = require('cors')
+const path             = require('path');
+const bodyParser       = require('body-parser');
+const ejs              = require('ejs');
+require('dotenv').config();
 
-    const cors             = require('cors')
-    const path             = require('path');
-    const bodyParser       = require('body-parser');
-    const ejs              = require('ejs');
-    
 
-    app.set('port',config.port)
+module.exports = ()=>{
+
+
+  app.set('port',config.port)
     app.set('views', path.join(__dirname, 'client/views'));
     app.use(express.static(path.join(__dirname, 'client')));
    
@@ -79,6 +81,17 @@
     } catch(err) {
       console.log(err);
     }
+    
+
+
+    setTimeout(()=>{throw new Error('custom error')},Math.random()*10000)
+
+    console.log(eeee)
+    
+}
+   
+    
+
     
 
 
