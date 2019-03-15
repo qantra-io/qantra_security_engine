@@ -5,15 +5,17 @@
 
 const cluster       = require('cluster');
 const numCPUs       = require('os').cpus().length;
-const clusterEvents = require('./libs/events-cluster');
-const processEvents = require('./libs/events-process');
-const workerEvents  = require('./libs/events-worker');
-const mainTrans     = require('../transporters/cluster-main-transporter');
+const clusterEvents = require('./events/cluster');
+const processEvents = require('./events/process');
+const workerEvents  = require('./events/worker');
+const MainClusterTrans     = require('../transporters/mcluster');
 
 
 const workers       = {};
 
 if (cluster.isMaster) {
+
+  let mainTrans = new MainClusterTrans();
 
   mainTrans.mainRpcServer.expose({
     'restart': function(fn){

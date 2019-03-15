@@ -6,6 +6,7 @@ let errorHandler = function(err){
     let error = (err && err.stack)? err.stack : err; 
 
     try {
+
         process.send({
             type: 'error',
             process: process.pid,
@@ -13,6 +14,7 @@ let errorHandler = function(err){
                 error: error
             }
         })
+        console.log('worker --> master');
         process.exit(1);
     } catch(err){console.log('SOCKET ALREADY CLOSED')}
  

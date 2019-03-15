@@ -1,4 +1,4 @@
-const pmLogger = require('../pm-logger');
+const pmLogger = require('../libs/pm-logger');
 
 module.exports = (cluster)=>{
 

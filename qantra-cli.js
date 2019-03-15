@@ -1,7 +1,7 @@
 const envManager   = require('./libs/env-manager');
 const cliLog       = new (require('./libs/cli/libs/cli-log'));
 const prompts      = require('./libs/cli/libs/prompts');
-const cliTrans     = require('./transporters/cli-transporter');
+const cliTrans     = require('./transporters/cli');
 const transUtil    = require('./transporters/libs/util');
 const BPromise     = require('bluebird');
 const daemonClient = BPromise.promisifyAll(cliTrans.daemonRpcClient);
@@ -84,7 +84,7 @@ async function run(){
     });
 
 
-    const subprocess = spawn('node', [path.resolve(__dirname, './qpm/cluster-daemon.js')], {
+    const subprocess = spawn('node', [path.resolve(__dirname, './qpm/daemon.js')], {
       // cwd:process.cwd(),
       detached: true,
       // stdio: 'ignore'
