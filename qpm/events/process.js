@@ -7,13 +7,7 @@ let errorHandler = function(err){
 
     try {
 
-        process.send({
-            type: 'error',
-            process: process.pid,
-            data: {
-                error: error
-            }
-        })
+        process.send({topic: 'error', payload: error});
         console.log('worker --> master');
         process.exit(1);
     } catch(err){console.log('SOCKET ALREADY CLOSED')}

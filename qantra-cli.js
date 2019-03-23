@@ -1,15 +1,169 @@
 const envManager   = require('./libs/env-manager');
 const cliLog       = new (require('./libs/cli/libs/cli-log'));
-const prompts      = require('./libs/cli/libs/prompts');
+const Prompt      = require('./libs/cli/libs/prompts');
 const cliTrans     = require('./transporters/cli');
 const transUtil    = require('./transporters/libs/util');
-const BPromise     = require('bluebird');
-const daemonClient = BPromise.promisifyAll(cliTrans.daemonRpcClient);
 const spawn        = require('child_process').spawn;
 const path         = require('path');
+const pmLogger     = require('./qpm/libs/pm-logger');
+const BPromise     = require('bluebird');
 
 
-// let daemonClient = BPromise.promisify(cliTrans.daemonRpcClient.call.bind(cliTrans.daemonRpcClient));
+class QantraCli extends Prompt{
+  constructor (){
+
+    super();
+
+    this.cliTrans  = cliTrans;
+    this.connected = false;
+    this.nodes = [];
+
+    this.init();
+    
+    
+  }
+
+  async init(){
+    this.connectWatcher();
+    this.printHeader();
+    await this.qantraSetup();
+
+    this.menu();
+  } 
+
+  /**
+   * watch client connection with daemon rpc server
+   */
+  connectWatcher(){
+    this.cliTrans.daemonRpcClient.sock.on('connect', ()=>{
+      this.connected = true;
+      this.cliTrans.daemonRpcClient.sock.once('reconnect attempt',()=>{
+        this.connected = false;
+      });
+    });
+  }
+
+  
+  async menu(){
+
+    await this.loading();
+
+    await this.state();
+
+    cliLog.glow('OPTIONS')
+  
+    let command = await this.commander();
+  
+    switch(command){
+
+      case 'start': 
+        this.start();
+        break;
+
+      case 'stop':
+        this.stop();
+        break;
+
+      case 'reconfigure':
+        this.reconfigure();
+        break;
+        
+      default:
+    }
+  }
+
+  
+
+  async start(){
+
+    if(!this.cliTrans.daemonRpcClient.sock.connected){
+      cliLog.spin('starting...');
+      const subprocess = spawn('node', [path.resolve(__dirname, './qpm/daemon.js')], {
+        detached: true,
+        // stdio: 'ignore'
+      });
+
+      subprocess.stdout.on('data', (data) => {
+        pmLogger.info(`stdout: ${data}`);
+      });
+      
+      subprocess.stderr.on('data', (data) => {
+        pmLogger.info(`stderr: ${data}`);
+      });
+      
+      subprocess.on('close', (code) => {
+        pmLogger.info(`child process exited with code ${code}`);
+      });
+
+      cliLog.spinner.succeed();
+
+      this.cliTrans.daemonRpcClient.sock.on('connect', this.menu.bind(this));
+
+
+
+     
+    } else {
+      cliLog.warning('unable to start. Already started.')
+    }
+
+  }
+
+
+  async reconfigure(){
+    envManager.removeEnvs(['REDIS_URI']);
+    await this.loading();
+    await this.qantraSetup();
+  }
+
+  callDaemon(call){
+    let that = this;
+    
+
+    return new Promise(function(resolve,reject){
+      let tm = setTimeout(reject,3000,'timeout');
+      that.cliTrans.daemonRpcClient.call(call, (err,data)=>{
+        clearTimeout(tm);
+        if(err)reject(err);
+        else resolve(data);
+      });
+    });
+  }
+
+  async state(){
+    let data = {};
+    cliLog.spin('loading state ...');
+    if(this.cliTrans.daemonRpcClient.sock.connected){
+      
+      
+      try {
+        data = await this.callDaemon('state');
+      }catch(err){
+        console.log(err);
+      }
+      
+    }
+    cliLog.spinner.stop();
+    this.printState(data);
+  }
+
+  async stop(){
+    this.callDaemon('stop').then((msg)=>{
+      this.connected=false;
+      this.menu()
+    }).catch((err)=>{
+      this.menu()
+    }); 
+  }
+
+  async loading(text="loading..."){
+    await new Promise((resolve,reject)=>setTimeout(resolve, 1000))
+  
+  }
+
+
+
+}
+
 
 
 
@@ -23,98 +177,10 @@ const path         = require('path');
 //   // => 3
 // })
 
-async function run(){
-
-  
-
-  
-  // if(cliTrans.daemonRpcClient.sock.connected){
-  //   console.log('client is connected to server ');
-  // }
-  // try {
-
-  //   console.log('checking deamon server..')
-  //   let rpcMethods = await daemonClient.methodsAsync('shutdown').timeout(2000);
-  // } catch(err){
-  //   console.log('daemon server down')
-
-    
-    
-  //   // subprocess.unref();
+ 
 
 
-  // }
-  
-
-
-  cliLog
-  .glow(`+------------------------------------------------------------+`)
-  .banner(`+                                                            +`)
-  .banner(`+                 Qantra Security Engine                     +`)
-  .banner(`+                                                            +`)
-  .glow(`+------------------------------------------------------------+`)
-
-  if(!envManager.envFileExists || !envManager.varsExists(['REDIS_URI', 'SERVER_UID', 'SERVER_PUB', 'SERVER_STEP'])){
-    cliLog
-    .glow(`Hello there! seems that your Qantra is not configured yet`)
-    .glow(`Qantra prompet will help you with configuration process.`)
-    .space()
-    .glow(`Make sure you have created Server API Key on Qantra.io.`, 'bold');
-
-      if(!envManager.varsExists(['REDIS_URI'])) await prompts.redisConnect();
-      if(!envManager.varsExists(['SERVER_UID', 'SERVER_PUB', 'SERVER_STEP'])) await prompts.connectCloud();
-
-  }
-
-
-
-  cliLog.spin('connecting to local Qantra...')
-  // await BPromise.delay(1000)
-  await new Promise((resolve,reject)=>setTimeout(resolve, 1000))
-  cliLog.spinner.stop();
-
-
-  if(!cliTrans.daemonRpcClient.sock.connected){
-
-    cliLog.spin('launching daemon...');
-
-    cliTrans.daemonRpcClient.sock.on('connect', function(){
-      cliLog.spinner.stop()
-      cliLog.info('connected.')
-    });
-
-
-    const subprocess = spawn('node', [path.resolve(__dirname, './qpm/daemon.js')], {
-      // cwd:process.cwd(),
-      detached: true,
-      // stdio: 'ignore'
-    });
-
-
-    subprocess.stdout.on('data', (data) => {
-      console.log(`stdout: ${data}`);
-    });
-    
-    subprocess.stderr.on('data', (data) => {
-      console.log(`stderr: ${data}`);
-    });
-    
-    subprocess.on('close', (code) => {
-      console.log(`child process exited with code ${code}`);
-    });
-
-  } else {
-    cliLog.info(`connected.`)
-  }
-
-
-
-
-
-}
-
-
-run();
+new QantraCli();
 
 
 

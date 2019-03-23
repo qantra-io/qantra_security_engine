@@ -2,37 +2,35 @@
  * main clustere: responsivle for clustering daemon workers 
  * 
  */
+const cluster            = require('cluster');
+const Clusterer          = require('./libs/cluster');
+const numCPUs            = require('os').cpus().length;
+const processEvents      = require('./events/process');
+const MainClusterTrans   = require('../transporters/mcluster');
+const pmLogger           = require('./libs/pm-logger');
 
-const cluster       = require('cluster');
-const numCPUs       = require('os').cpus().length;
-const clusterEvents = require('./events/cluster');
-const processEvents = require('./events/process');
-const workerEvents  = require('./events/worker');
-const MainClusterTrans     = require('../transporters/mcluster');
 
 
-const workers       = {};
 
 if (cluster.isMaster) {
 
-  let mainTrans = new MainClusterTrans();
+  const mainTrans = new MainClusterTrans();
+  const clusterer = new Clusterer(cluster,'main', mainTrans);
 
   mainTrans.mainRpcServer.expose({
-    'restart': function(fn){
-      fn({message:'restarting..'});
+    'stop': function(fn){
+      
+      pmLogger.log('info', 'main stopping ....')
+      clusterer.stopWorkersAndExit();
+      fn(null, {message:'stopped'});
     }
   });
 
   
 
-  console.log(`Master ${process.pid} is running`);
-
-  for(let i = 0; i < 2; i++) {
-    let worker = cluster.fork();
-    workerEvents(worker, {type:'main'},mainTrans);
+  for(let i = 0; i < numCPUs; i++) {
+    clusterer.fork();
   }
-
-  clusterEvents(cluster);
   
 }  else {
 

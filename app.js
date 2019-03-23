@@ -1,4 +1,6 @@
-   
+
+
+require('dotenv').config();
 const config           = require('./config');
 const pjson            = require('./package.json');
 const ProxyManager     = require('./proxy').ProxyManager;
@@ -9,11 +11,17 @@ const cors             = require('cors')
 const path             = require('path');
 const bodyParser       = require('body-parser');
 const ejs              = require('ejs');
-require('dotenv').config();
+const ProcessTrans     = require('./transporters/process');
 
 
 module.exports = ()=>{
 
+  const processTrans = new ProcessTrans();
+
+  setInterval(()=>{
+    console.log('process sending -->')
+    processTrans.toSignal.emit('test', `from process ${process.pid} at ${new Date().getTime()}`)
+  },5000)
 
   app.set('port',config.port)
     app.set('views', path.join(__dirname, 'client/views'));
@@ -84,9 +92,9 @@ module.exports = ()=>{
     
 
 
-    setTimeout(()=>{throw new Error('custom error')},Math.random()*10000)
+    // setTimeout(()=>{throw new Error('custom error')},Math.random()*10000)
 
-    console.log(eeee)
+    // console.log(eeee)
     
 }
    

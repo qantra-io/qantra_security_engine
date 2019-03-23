@@ -2,102 +2,140 @@ const spawn           = require('child_process').spawn;
 const path            = require('path');
 const DaemonTrans     = require('../../transporters/daemon');
 const pmLogger        = require('../libs/pm-logger');
-const ProcessTrans    = require('../../transporters/process');
-// const FromSignal      = require('./signal');
 
-function start(fn){
+const FromSignal      = require('./signal');
+const FromBuffer      = require('./buffer');
 
-
-  const daemonTrans = new DaemonTrans();
-  const processTrans = new ProcessTrans();
+const QantraAuth      = require('../libs/qantra-auth');
 
 
-  daemonTrans.fromSignal.on('pm:*', function(action,data){
+
+class DaemonWorker extends QantraAuth{ 
+  constructor(){
+
+    super();
+
+    this.daemonTrans    = new DaemonTrans();
+    this.signal         = new FromSignal(this.daemonTrans.fromSignal);
+    this.buffer         = new FromBuffer(this.daemonTrans.fromBuffer);
+
+    this.upMain();
+    this.expose();
+    this.onMainConnection({
+      onConnect: this.onMainConnect.bind(this),
+      onDisconnect: ()=>{}
+    });
+    this.mainAskedToStop = false;
+
+    this.signal.on("nodes::update", (nodes)=>{
+      pmLogger.info(JSON.stringify(nodes));
+    });
+
     
-    console.log(`daemon #`)
-    console.log(`
+  }
 
 
-    got on PM action ${action}
-    
-    
-    `)
-  });
+  onMainConnect(){
+    this.cloudConnect();
+  }
 
-  daemonTrans.daemonRpcServer.expose({
-    'shutdown': function(fn){
-        fn({message:'sending signal to master to shutdown then shutdowning myself. if needed'});
-        // daemonTrans.mainRpcClient.call('shutdown', fn);
-    },
-    'restart': function(fn){
-        daemonTrans.mainRpcClient.call('restart', fn);
-    }
+  expose(){
 
-  });
 
- 
 
-    // setInterval(()=>{
+
+    this.daemonTrans.daemonRpcServer.expose({
+      'state': (fn)=>{
+          fn(null,{nodes:this.signal.nodes});
+      },
+      'stop': (fn)=>{
+          
+          pmLogger.log('info',`# requesting main to shutdown.`)
+          this.daemonTrans.mainRpcClient.call('stop', (err, mobj)=>{
+            if(err){pmLogger.log('error', error)} else {
+              this.mainAskedToStop = true;
+              pmLogger.log('info', `master replied ${JSON.stringify(mobj)}`)
+              fn(null,mobj);
+              pmLogger.log('info', 'SEND#ING'.repeat(5));
+
+              /*send signal to master to exit*/
+              process.send({topic:'exit'});
+              /* informing its death */
+              this.signal.self('exit');
+              /* will exit itself in a second*/
+              setTimeout(process.exit, 1000, 0);
+
+            }
+          });
+      }
+    });
+  }
+
+  async waitForConnect(){
+    await new Promise((resolve,reject)=>setTimeout(resolve, 1000))
+  }
+
+
+  /* if main master was shutdowned suddenly */
+  onMainConnection(opts={}){
+    this.daemonTrans.mainRpcClient.sock.on('connect', ()=>{
+      if(opts.onConnect)opts.onConnect();
+      this.daemonTrans.mainRpcClient.sock.once('reconnect attempt', ()=>{
+          if(!this.daemonTrans.mainRpcClient.sock.connected && !this.mainAskedToStop){
+            if(opts.onDisconnect)opts.onDisconnect();
+            this.signal.removeNodesOfRole('main');
+            this.upMain();
+          }
+      });
+    });
+  }
+
+  // clearMainChecker(){
+  //   clearInterval(this.mainCheckerInterval);
+  // }
+  // mainChecker(){
+  //   return setInterval(()=>{
+
+  //     if(!this.daemonTrans.mainRpcClient.sock.connected)this.upMain();
+        
+  //   },3000);
+  // }
+  async upMain(){
+
+    await this.waitForConnect();
+
+    if(!this.daemonTrans.mainRpcClient.sock.connected){
+      const subprocess = spawn('node', [path.resolve(__dirname, '../main.js')], {
+        detached: true,
+        // stdio: 'ignore'
+      });
+  
+      subprocess.stdout.on('data', (data) => {
+        pmLogger.info(`stdout: ${data}`);
+      });
       
-    //   console.log(`
-    //   signalserver connecte
-    //   `);
-
-    //   // console.log(JSON.stringify(daemonTrans.fromSignal.sock))
-    //   console.log('sending...')
-    //   processTrans.toSignal.emit('hello', 'hollad');
-    // },3000)
-    // let fromSignal  = new FromSignal();
-
-    // fromSignal.on('pm:error',function(data){
-    //   console.log(
-    //     `from signal got message 
-    //   on pm 
-    //   with action 
-    //   `)
-    //   // this.pm(action,data)
-    // })
-
-
-    // daemonTrans.fromSignal.on('*',function(data){
-    //   console.log(
-    //     `from signal got message 
-    //   on pm 
-    //   with action 
-    //   `)
-    //   // this.pm(action,data)
-    // })
-
-    if(!daemonTrans.mainRpcClient.sock.connected){
-
-          const subprocess = spawn('node', [path.resolve(__dirname, '../main.js')], {
-            detached: true,
-            // stdio: 'ignore'
-          });
+      subprocess.stderr.on('data', (data) => {
+        pmLogger.info(`stderr: ${data}`);
+      });
       
-          subprocess.stdout.on('data', (data) => {
-            console.log(`stdout: ${data}`);
-          });
-          
-          subprocess.stderr.on('data', (data) => {
-            console.log(`stderr: ${data}`);
-          });
-          
-          subprocess.on('close', (code) => {
-            console.log(`child process exited with code ${code}`);
-          });
-          
-    } else {
-        fn({message:'Qantra is already running.'})
+      subprocess.on('close', (code) => {
+        pmLogger.info(`child process exited with code ${code}`);
+      });
     }
+    
+
+  }
+    
+  
 }
+
 
 
 
 
 module.exports = ()=>{
 
-  start();
+  new DaemonWorker();
 
  
 

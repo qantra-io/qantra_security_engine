@@ -51,6 +51,14 @@ class EnvManager {
     this.copyToProcess();
   }
 
+  removeEnvs(names){
+    names.forEach((name)=>{
+      if(this.parsed[name])delete this.parsed[name];
+    });
+    this.updateFile();
+    this.copyToProcess();
+  }
+
   /** 
    * check if env variables in given array exists 
    * @param {array} arr - array of enviroment variables names 
